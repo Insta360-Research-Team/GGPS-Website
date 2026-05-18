@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PanoLOG: G²PS for Panoramic Outdoor Reconstruction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,400..900,0..100,0..1&family=Inter:wght@400;500;600;700&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { serif: ['Newsreader', 'Georgia', 'serif'], sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Fraunces', 'Newsreader', 'serif'] } } }
+        }
+    </script>
+    <style>
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .collapsible-content.active { max-height: 2000px; }
+        table { border-collapse: collapse; width: 100%; font-size: 0.875rem; }
+        th, td { padding: 0.5rem 0.75rem; text-align: center; border-bottom: 1px solid #e5e7eb; }
+        th { background: #f9fafb; font-weight: 600; }
+        .best { color: #dc2626; font-weight: 700; }
+        .largest { color: #f59e0b; font-weight: 700; }
+        section[id] { scroll-margin-top: 4.5rem; }
+        html { scroll-behavior: smooth; }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px; background: #111827; transition: width 0.2s ease; }
+        .nav-link:hover::after { width: 100%; }
+        .brand-logo {
+            font-family: 'Fraunces', 'Newsreader', serif;
+            font-weight: 900;
+            font-size: 1.15rem;
+            letter-spacing: -0.035em;
+            font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1;
+            font-feature-settings: 'ss01' on, 'ss02' on;
+            line-height: 1;
+            color: #111827;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            transition: opacity 0.2s ease;
+        }
+        .brand-logo:hover { opacity: 0.7; }
+        .brand-logo .brand-dot {
+            display: inline-block;
+            width: 0.45rem; height: 0.45rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #111827 0%, #6b7280 100%);
+        }
+        .brand-logo .brand-pano { font-style: italic; }
+    </style>
+</head>
+<body class="bg-white text-gray-800 font-sans">
+    <!-- Sticky top nav -->
+    <nav class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-6xl mx-auto px-4 h-12 flex items-center justify-between">
+            <a href="#top" class="brand-logo"><span class="brand-dot"></span><span><span class="brand-pano">Pano</span>LOG</span></a>
+            <div class="hidden md:flex items-center gap-6 text-sm text-gray-600">
+                <a href="#abstract" class="nav-link hover:text-gray-900 transition">Abstract</a>
+                <a href="#method" class="nav-link hover:text-gray-900 transition">Method</a>
+                <a href="#results" class="nav-link hover:text-gray-900 transition">Results</a>
+                <a href="#tables" class="nav-link hover:text-gray-900 transition">Tables</a>
+                <a href="#ablation" class="nav-link hover:text-gray-900 transition">Ablation</a>
+                <a href="#citation" class="nav-link hover:text-gray-900 transition">BibTeX</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Company Logo -->
+    <a href="https://www.insta360.com" target="_blank" class="fixed top-2 right-4 z-50">
+        <img src="static/logo.png" alt="Insta360" class="h-8 rounded shadow-sm">
+    </a>
+
+    <!-- Header -->
+    <section id="top" class="pt-12 pb-6 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-3xl md:text-4xl font-bold font-serif leading-tight mb-6">
+                G<sup>2</sup>PS: Geometry and Gradient-based Partitioning for<br>Panoramic Outdoor Reconstruction
+            </h1>
+            <div class="text-base text-gray-700 leading-relaxed space-y-1">
+                <p>
+                    <span class="text-gray-700">Weijian Chen</span><sup>1,3</sup>,
+                    <span class="text-gray-700">Weibo Yao</span><sup>2,3</sup>,
+                    <span class="text-gray-700">Yuhang Zhang</span><sup>3</sup>,
+                    <span class="text-gray-700">Xiaolin Tang</span><sup>3</sup>,
+                    <span class="text-gray-700">Guo Wang</span><sup>3</sup>,
+                    <span class="text-gray-700">Weijun Zhang</span><sup>3</sup>,
+                    <span class="text-gray-700">Xitong Gao</span><sup>4</sup>,
+                    <span class="text-gray-700">Yihao Chen</span><sup>3</sup>,
+                    <span class="text-gray-700">Hongde Qin</span><sup>5</sup>,
+                    <span class="text-gray-700">Lu Qi</span><sup>3,6</sup>
+                </p>
+                <p class="text-sm text-gray-500 mt-3">
+                    <sup>1</sup>Sun Yat-sen University &nbsp;
+                    <sup>2</sup>South China University of Technology &nbsp;
+                    <sup>3</sup>Insta360 &nbsp;
+                    <sup>4</sup>University of Chinese Academy of Sciences &nbsp;
+                    <sup>5</sup>Harbin Engineering University &nbsp;
+                    <sup>6</sup>Wuhan University
+                </p>
+            </div>
+            <!-- 快捷链接：填入arXiv、论文PDF、GitHub代码仓库、数据集、视频的实际URL -->
+    <div class="flex flex-wrap justify-center gap-3 mt-6">
+                <a href="#" aria-disabled="true" title="arXiv preprint will be available upon publication" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+                    <i class="ai ai-arxiv"></i> arXiv
+                    <span class="text-xs text-gray-400 font-medium">Jun 2026</span>
+                </a>
+                <a href="#" aria-disabled="true" title="Code release scheduled for July 2026" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+                    <i class="fa-brands fa-github"></i> Code
+                    <span class="text-xs text-gray-400 font-medium">Jul 2026</span>
+                </a>
+                <a href="#" aria-disabled="true" title="Dataset release scheduled for June 2026" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+                    <i class="fa-solid fa-database"></i> Dataset
+                    <span class="text-xs text-gray-400 font-medium">Jun 2026</span>
+                </a>
+                <a href="#" aria-disabled="true" title="YouTube video coming soon" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+                    <i class="fa-brands fa-youtube"></i> YouTube
+                    <span class="text-xs text-gray-400 font-medium">Coming soon</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Release announcement -->
+    <section class="px-4 -mt-2">
+        <div class="max-w-3xl mx-auto">
+            <div class="flex items-center justify-center gap-3 px-5 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-700">
+                <i class="fa-regular fa-calendar-check text-gray-500"></i>
+                <span><span class="font-semibold text-gray-900">Late June 2026:</span> Paper, model, and dataset will be released together.</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 主视频对比滑块：左侧真值 vs 右侧我们的结果，用户可左右拖动对比 -->
+    <section class="py-8 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="relative w-full aspect-[2/1] rounded-xl overflow-hidden border border-gray-200 select-none" id="video-compare">
+                <!-- 左侧视频：真值(GT) -->
+                <video class="absolute inset-0 w-full h-full object-cover" id="video-gt" muted loop playsinline preload="metadata">
+                    <source src="video/FTB_Raw.mp4" type="video/mp4">
+                </video>
+                <!-- 右侧视频：训练结果(Training) -->
+                <div class="absolute inset-0 overflow-hidden" id="video-ours-clip" style="clip-path: inset(0 0 0 50%);">
+                    <video class="absolute inset-0 w-full h-full object-cover" id="video-ours" muted loop playsinline preload="metadata">
+                        <source src="video/h264/FTB.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- Labels -->
+                <span class="absolute top-3 left-3 bg-black/45 backdrop-blur-sm text-white text-[11px] font-medium tracking-wide px-2 py-0.5 rounded">GT</span>
+                <span class="absolute top-3 right-3 bg-black/45 backdrop-blur-sm text-white text-[11px] font-medium tracking-wide px-2 py-0.5 rounded">Training</span>
+                <!-- Slider handle -->
+                <div class="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg cursor-ew-resize" id="slider-handle" style="left:50%;">
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow flex items-center justify-center">
+                        <i class="fa-solid fa-arrows-left-right text-gray-600 text-xs"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center mt-3">
+                <button onclick="togglePlayback()" class="text-sm text-gray-500 hover:text-gray-800 transition" id="play-btn">
+                    <i class="fa-solid fa-play mr-1"></i> Play
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Abstract -->
+    <section id="abstract" class="py-8 px-4">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold font-serif text-center mb-4">Abstract</h2>
+            <p class="text-gray-700 leading-relaxed text-justify">
+                Scaling 3D Gaussian Splatting (3DGS) to large outdoor scenes is costly in both data acquisition and computation. Adopting panoramic images with equirectangular projection (ERP) can reduce capture effort via their full 360° field of view, yet the resulting omnipresent visibility invalidates existing partitioning strategies that rely on local camera frustums, causing block-wise optimization to degenerate into global training. We propose <span class="font-semibold">PanoLOG</span>, a two-stage coarse-to-fine framework equipped with a Geometry and Gradient-based Partitioning Strategy (G<sup>2</sup>PS) tailored for large-scale panoramic 3DGS reconstruction. PanoLOG combines panorama-specific geometric priors in a global coarse stage with an adaptive, importance-aware partitioning scheme in the refinement stage, enabling truly block-parallel training under 360° visibility. We further construct <span class="font-semibold">Pano360</span>, the first large-scale panoramic outdoor benchmark for 3DGS reconstruction. Extensive experiments demonstrate that PanoLOG achieves state-of-the-art rendering quality while maintaining scalable, block-parallel training.
+            </p>
+            <p class="mt-4 text-xs text-gray-500 text-center">
+                <i class="fa-regular fa-file-shield mr-1"></i>
+                Patent pending. Full algorithmic details of G<sup>2</sup>PS will be disclosed in our forthcoming publication.
+            </p>
+        </div>
+    </section>
+
+    <!-- Teaser -->
+    <section id="method" class="py-8 px-4">
+        <div class="max-w-4xl mx-auto">
+            <figure class="mx-auto">
+                <img src="static/teaser.png" alt="PanoLOG overview: sky-level and ground-level renderings of large-scale outdoor reconstructions" class="w-full max-h-[26rem] object-contain rounded-lg shadow-sm border border-gray-100 mx-auto">
+                <figcaption class="text-sm text-gray-500 text-center mt-3">Figure 1: Overview of PanoLOG for scalable large-scale outdoor reconstruction.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- 2×2视频网格：展示户外大规模重建效果（ERP全景：宽高比 2:1），在各src中填入视频路径 -->
+    <section id="results" class="py-8 px-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-2xl font-bold font-serif text-center mb-6">Visual Results</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- 视频1: FTX -->
+                <div class="aspect-[2/1] bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                    <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata">
+                        <source src="video/h264/FTX.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- 视频2: GMZ -->
+                <div class="aspect-[2/1] bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                    <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata">
+                        <source src="video/h264/GMZ.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- 视频3: NSC -->
+                <div class="aspect-[2/1] bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                    <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata">
+                        <source src="video/h264/NSC.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <!-- 视频4: NSK -->
+                <div class="aspect-[2/1] bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                    <video class="w-full h-full object-cover" controls muted loop playsinline preload="metadata">
+                        <source src="video/h264/NSK.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            <p class="text-sm text-gray-500 italic text-center mt-5">All videos above are rendered from our trained model.</p>
+        </div>
+    </section>
+
+    <!-- Benchmark Comparison Image -->
+    <section class="py-8 px-4">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold font-serif text-center mb-6">Qualitative Comparisons</h2>
+            <figure>
+                <img src="static/main_exp.jpeg" alt="Qualitative comparison between PanoLOG and existing methods across diverse large-scale scenes" class="w-full rounded-lg shadow-sm border border-gray-100">
+                <figcaption class="text-sm text-gray-500 text-center mt-2">Comprehensive comparison between PanoLOG and four existing methods. Our method excels in reconstructing distant regions and complex glass facades.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- Quantitative Results (Collapsible Tables) -->
+    <section id="tables" class="py-8 px-4">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-bold font-serif text-center mb-6">Quantitative Results</h2>
+
+            <!-- Table 1 -->
+            <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                <button onclick="toggleTable('table1')" class="w-full flex items-center justify-between px-5 py-3 bg-gray-50 hover:bg-gray-100 transition text-left font-medium text-gray-800">
+                    <span>Table 1: A1 Drone Sub-scenes (NSC, NSK) on Pano360</span>
+                    <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="table1-icon"></i>
+                </button>
+                <div id="table1" class="collapsible-content active px-4 py-3">
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr><th rowspan="2">Method</th><th colspan="4">NSC</th><th colspan="4">NSK</th></tr>
+                                <tr><th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th><th>Model Size↓ (MB)</th><th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th><th>Model Size↓ (MB)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="text-left">H3DGS</td><td>27.7787</td><td>0.8564</td><td>0.2457</td><td>1002.1</td><td>24.1480</td><td>0.8154</td><td>0.1934</td><td class="largest">1843.2</td></tr>
+                                <tr><td class="text-left">CityGaussian</td><td>27.7340</td><td>0.8453</td><td>0.2609</td><td>523.7</td><td class="best">24.8270</td><td>0.8176</td><td>0.1983</td><td>1126.4</td></tr>
+                                <tr><td class="text-left">DOGS</td><td>26.8486</td><td>0.8186</td><td>0.2769</td><td class="largest">1024.0</td><td>24.4606</td><td>0.7980</td><td>0.2174</td><td>1536.3</td></tr>
+                                <tr><td class="text-left">Momentum-GS</td><td>26.4568</td><td>0.8311</td><td>0.2625</td><td>802.5</td><td>23.9123</td><td>0.7979</td><td>0.1986</td><td>1024.0</td></tr>
+                                <tr><td class="text-left font-semibold">Ours</td><td class="best">28.1838</td><td class="best">0.8594</td><td class="best">0.2435</td><td>463.5</td><td>24.6387</td><td class="best">0.8243</td><td class="best">0.1916</td><td>544.0</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table 2 -->
+            <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                <button onclick="toggleTable('table2')" class="w-full flex items-center justify-between px-5 py-3 bg-gray-50 hover:bg-gray-100 transition text-left font-medium text-gray-800">
+                    <span>Table 2: X5 Handheld Sub-scenes (BAX, NSN) on Pano360</span>
+                    <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="table2-icon"></i>
+                </button>
+                <div id="table2" class="collapsible-content px-4 py-3">
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr><th rowspan="2">Method</th><th colspan="4">BAX</th><th colspan="4">NSN</th></tr>
+                                <tr><th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th><th>Model Size↓ (MB)</th><th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th><th>Model Size↓ (MB)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="text-left">H3DGS</td><td>20.7104</td><td>0.6626</td><td class="best">0.3936</td><td class="largest">7577.6</td><td>23.4464</td><td class="best">0.7530</td><td class="best">0.3018</td><td class="largest">5734.4</td></tr>
+                                <tr><td class="text-left">CityGaussian</td><td>19.8361</td><td>0.5995</td><td>0.4902</td><td>418.5</td><td>21.9492</td><td>0.6729</td><td>0.4221</td><td>526.6</td></tr>
+                                <tr><td class="text-left">DOGS</td><td>19.6094</td><td>0.5745</td><td>0.5203</td><td>671.8</td><td>22.6743</td><td>0.6587</td><td>0.4454</td><td>774.9</td></tr>
+                                <tr><td class="text-left">Momentum-GS</td><td>20.0993</td><td>0.5999</td><td>0.4896</td><td>1024.0</td><td>22.9746</td><td>0.7052</td><td>0.3703</td><td>1331.2</td></tr>
+                                <tr><td class="text-left font-semibold">Ours</td><td class="best">21.3468</td><td class="best">0.6656</td><td>0.4169</td><td>1331.2</td><td class="best">24.6095</td><td>0.7508</td><td>0.3347</td><td>766.8</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table 3 -->
+            <div class="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+                <button onclick="toggleTable('table3')" class="w-full flex items-center justify-between px-5 py-3 bg-gray-50 hover:bg-gray-100 transition text-left font-medium text-gray-800">
+                    <span>Table 3: Public Panoramic Datasets (Ricoh360, 360Roam)</span>
+                    <i class="fa-solid fa-chevron-down text-gray-400 transition-transform" id="table3-icon"></i>
+                </button>
+                <div id="table3" class="collapsible-content px-4 py-3">
+                    <div class="overflow-x-auto">
+                        <table>
+                            <thead>
+                                <tr><th rowspan="2">Method</th><th colspan="3">Ricoh360</th><th colspan="3">360Roam</th></tr>
+                                <tr><th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th><th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td class="text-left">OmniGS</td><td>26.00</td><td>0.828</td><td>0.210</td><td>24.93</td><td>0.800</td><td>0.253</td></tr>
+                                <tr><td class="text-left">3DGS</td><td>26.26</td><td>0.825</td><td>0.225</td><td>24.98</td><td>0.800</td><td>0.271</td></tr>
+                                <tr><td class="text-left">ODGS</td><td>22.71</td><td>0.748</td><td>0.326</td><td>19.74</td><td>0.627</td><td>0.476</td></tr>
+                                <tr><td class="text-left">SpaGS</td><td>26.11</td><td>0.832</td><td>0.243</td><td>25.45</td><td>0.814</td><td>0.223</td></tr>
+                                <tr><td class="text-left font-semibold">Ours</td><td class="best">26.48</td><td class="best">0.845</td><td class="best">0.183</td><td class="best">25.83</td><td class="best">0.821</td><td class="best">0.222</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparisons on Public Datasets (Appendix Fig.) -->
+    <section class="py-8 px-4">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold font-serif text-center mb-6">Comparisons on Public Datasets</h2>
+            <figure>
+                <img src="static/appendix_fig2.jpeg" alt="Qualitative comparison of PanoLOG against four prior methods on public panoramic datasets" loading="lazy" class="w-full max-w-xl mx-auto rounded-lg shadow-sm border border-gray-100">
+                <figcaption class="text-sm text-gray-500 text-center mt-3">
+                    Qualitative comparison against four prior methods on the Ricoh360 and 360Roam datasets. PanoLOG preserves finer geometry and texture across diverse outdoor scenes.
+                </figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- Ablation Study -->
+    <section id="ablation" class="py-8 px-4">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-2xl font-bold font-serif text-center mb-6">Ablation Studies</h2>
+            <figure>
+                <img src="static/compare.jpeg" alt="Ablation comparison of the full PanoLOG model against variants with selected components disabled" class="w-full rounded-lg shadow-sm border border-gray-100">
+                <figcaption class="text-sm text-gray-500 text-center mt-2">Ablation on two representative scenes. Each component of G<sup>2</sup>PS contributes to the final reconstruction quality.</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- BibTeX -->
+    <section id="citation" class="py-8 px-4">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold font-serif text-center mb-4">Citation</h2>
+            <div class="relative bg-gray-50 rounded-lg p-6 border border-gray-200 text-center">
+                <i class="fa-regular fa-clock text-gray-400 text-2xl mb-3"></i>
+                <p class="text-sm text-gray-600">
+                    A formal citation will be available once the paper is released
+                    (<span class="font-medium text-gray-800">Late June 2026</span>).
+                </p>
+                <p class="text-xs text-gray-400 mt-2">Please check back after publication.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-gray-100 mt-8">
+        <div class="max-w-4xl mx-auto text-center text-sm text-gray-400 space-y-2">
+            <p>This page template is inspired by <a href="https://nerfies.github.io" class="text-gray-500 hover:text-blue-600">Nerfies</a> and <a href="https://dekuliutesla.github.io/CityGaussianV2/" class="text-gray-500 hover:text-blue-600">CityGaussian V2</a>.</p>
+            <p class="text-xs">
+                Last updated: May 2026 ·
+                Website content licensed under
+                <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" class="text-gray-500 hover:text-blue-600">CC BY 4.0</a>.
+            </p>
+            <p class="text-xs max-w-2xl mx-auto leading-relaxed">
+                The CC BY 4.0 license applies only to the textual and visual content of this webpage.
+                All algorithmic methods, model weights, and related intellectual property — including pending patents — are reserved by the authors and their affiliated institutions.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function toggleTable(id) {
+            const el = document.getElementById(id);
+            const icon = document.getElementById(id + '-icon');
+            el.classList.toggle('active');
+            icon.style.transform = el.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        // Video comparison slider
+        const container = document.getElementById('video-compare');
+        const clip = document.getElementById('video-ours-clip');
+        const handle = document.getElementById('slider-handle');
+        const videoGt = document.getElementById('video-gt');
+        const videoOurs = document.getElementById('video-ours');
+        let dragging = false;
+
+        function updateSlider(x) {
+            const rect = container.getBoundingClientRect();
+            const pct = Math.max(0, Math.min(1, (x - rect.left) / rect.width)) * 100;
+            clip.style.clipPath = `inset(0 0 0 ${pct}%)`;
+            handle.style.left = pct + '%';
+        }
+
+        container.addEventListener('mousedown', (e) => { dragging = true; updateSlider(e.clientX); });
+        document.addEventListener('mousemove', (e) => { if (dragging) updateSlider(e.clientX); });
+        document.addEventListener('mouseup', () => { dragging = false; });
+        container.addEventListener('touchstart', (e) => { dragging = true; updateSlider(e.touches[0].clientX); });
+        document.addEventListener('touchmove', (e) => { if (dragging) updateSlider(e.touches[0].clientX); });
+        document.addEventListener('touchend', () => { dragging = false; });
+
+        // Sync playback
+        let playing = false;
+        function togglePlayback() {
+            playing = !playing;
+            const btn = document.getElementById('play-btn');
+            if (playing) {
+                videoOurs.currentTime = videoGt.currentTime;
+                Promise.all([videoGt.play(), videoOurs.play()]).catch(() => {});
+                btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i> Pause';
+            } else {
+                videoGt.pause(); videoOurs.pause();
+                btn.innerHTML = '<i class="fa-solid fa-play mr-1"></i> Play';
+            }
+        }
+        videoGt.addEventListener('timeupdate', () => {
+            if (Math.abs(videoGt.currentTime - videoOurs.currentTime) > 0.05) {
+                videoOurs.currentTime = videoGt.currentTime;
+            }
+        });
+    </script>
+</body>
+</html>

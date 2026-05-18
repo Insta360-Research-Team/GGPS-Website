@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+*.DS_Store
+
+# 视频原始素材：体积过大，托管到 GitHub Releases
+video/
+
+# 编辑器/IDE
+.vscode/
+.idea/
+
+# 临时文件
+*.log
