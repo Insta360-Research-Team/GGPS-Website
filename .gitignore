@@ -11,3 +11,6 @@ video/
 
 # 临时文件
 *.log
+# Claude Code 本地开发说明（不对外公开）
+CLAUDE.md
+.claude/
