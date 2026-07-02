@@ -73,6 +73,12 @@
         <img src="static/logo.png" alt="Insta360" class="h-8 rounded shadow-sm">
     </a>
 
+    <!-- 视频加载提示：固定于导航栏下边缘之下、右对齐 logo，橙色小字，不占正文空间 -->
+    <p class="hidden md:flex items-center gap-1.5 fixed top-14 right-4 z-50 text-xs text-amber-500">
+        <i class="fa-regular fa-clock"></i>
+        <span>High-quality videos — please allow a moment to load.</span>
+    </p>
+
     <!-- Header -->
     <section id="top" class="pt-12 pb-6 px-4">
         <div class="max-w-4xl mx-auto text-center">
@@ -119,6 +125,10 @@
                     <i class="fa-brands fa-youtube"></i> YouTube
                     <span class="text-xs text-gray-400 font-medium">Coming soon</span>
                 </a>
+                <a href="#" aria-disabled="true" title="3DGS rendering plugin for Unreal Engine 5.8 — coming soon" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+                    <i class="fa-solid fa-cube"></i> 3DGS Plugin &amp; Unreal Engine
+                    <span class="text-xs text-gray-400 font-medium">Coming soon</span>
+                </a>
             </div>
         </div>
     </section>
@@ -128,7 +138,7 @@
         <div class="max-w-3xl mx-auto">
             <div class="flex items-center justify-center gap-3 px-5 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-700">
                 <i class="fa-regular fa-calendar-check text-gray-500"></i>
-                <span><span class="font-semibold text-gray-900">Mid-July 2026:</span> Paper, code, and dataset will be released together.</span>
+                <span><span class="font-semibold text-gray-900">Mid-July 2026:</span> Paper, code, and dataset will be released together. We will also provide a 3DGS rendering plugin built on UE 5.8 — the <span class="font-bold italic text-amber-500">first</span> rendering plugin to support the latest Unreal Engine. Stay tuned.</span>
             </div>
         </div>
     </section>
