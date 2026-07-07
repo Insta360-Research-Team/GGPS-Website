@@ -1,0 +1,23 @@
+index.html
+  57feb2f22ede326a 90-95,97,99,102-104
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "14c4f616bc1200dccff3df6de6bb7e3b26780557",
+  "prompts": {
+    "57feb2f22ede326a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f9d61ad6-c914-42e2-841e-16d76fdb3385",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "zhangyuhang",
+      "messages": [],
+      "total_additions": 12,
+      "total_deletions": 12,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  }
+}
