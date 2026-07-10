@@ -1,0 +1,23 @@
+index.html
+  cef34d8fe655bbae 110,112,115,135,351-362
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "167f4cee04ed040fa9e735e330049091277d1dae",
+  "prompts": {
+    "cef34d8fe655bbae": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6dd862df-ec50-4921-b2cf-974dde787da4",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Z-Insta360",
+      "messages": [],
+      "total_additions": 16,
+      "total_deletions": 17,
+      "accepted_lines": 16,
+      "overriden_lines": 0
+    }
+  }
+}
