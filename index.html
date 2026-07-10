@@ -107,23 +107,17 @@
                     <sup>6</sup>Wuhan University
                 </p>
             </div>
-            <!-- 快捷链接：填入arXiv、论文PDF、GitHub代码仓库、数据集、视频的实际URL -->
+            <!-- 快捷链接：arXiv 与 GitHub 代码已上线；数据集与插件待发布 -->
     <div class="flex flex-wrap justify-center gap-3 mt-6">
-                <a href="#" aria-disabled="true" title="arXiv preprint will be available upon publication" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+                <a href="https://arxiv.org/abs/2607.08769" target="_blank" rel="noopener" title="arXiv preprint" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
                     <i class="ai ai-arxiv"></i> arXiv
-                    <span class="text-xs text-gray-400 font-medium">Mid-Jul 2026</span>
                 </a>
-                <a href="#" aria-disabled="true" title="Code release scheduled for mid-July 2026" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
+                <a href="https://github.com/Insta360-Research-Team/GGPS" target="_blank" rel="noopener" title="Training code on GitHub" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
                     <i class="fa-brands fa-github"></i> Code
-                    <span class="text-xs text-gray-400 font-medium">Mid-Jul 2026</span>
                 </a>
                 <a href="#" aria-disabled="true" title="Dataset release scheduled for mid-July 2026" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
                     <i class="fa-solid fa-database"></i> Dataset
                     <span class="text-xs text-gray-400 font-medium">Mid-Jul 2026</span>
-                </a>
-                <a href="#" aria-disabled="true" title="YouTube video coming soon" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
-                    <i class="fa-brands fa-youtube"></i> YouTube
-                    <span class="text-xs text-gray-400 font-medium">Coming soon</span>
                 </a>
                 <a href="#" aria-disabled="true" title="3DGS rendering plugin for Unreal Engine 5.8 — coming soon" onclick="event.preventDefault()" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition">
                     <i class="fa-solid fa-cube"></i> 3DGS Plugin &amp; Unreal Engine
@@ -138,7 +132,7 @@
         <div class="max-w-3xl mx-auto">
             <div class="flex items-center justify-center gap-3 px-5 py-3 bg-gray-50 border border-gray-200 rounded-full text-sm text-gray-700">
                 <i class="fa-regular fa-calendar-check text-gray-500"></i>
-                <span><span class="font-semibold text-gray-900">Mid-July 2026:</span> Paper, code, and dataset will be released together. We will also provide a 3DGS rendering plugin built on UE 5.8 — the <span class="font-bold italic text-amber-500">first</span> rendering plugin to support the latest Unreal Engine. Stay tuned.</span>
+                <span><span class="font-semibold text-gray-900">Now available:</span> The paper and training code are released. The dataset and a 3DGS rendering plugin built on UE 5.8 — the <span class="font-bold italic text-amber-500">first</span> rendering plugin to support the latest Unreal Engine — are coming in mid-July 2026. Stay tuned.</span>
             </div>
         </div>
     </section>
@@ -354,13 +348,18 @@
     <section id="citation" class="py-8 px-4">
         <div class="max-w-3xl mx-auto">
             <h2 class="text-2xl font-bold font-serif text-center mb-4">Citation</h2>
-            <div class="relative bg-gray-50 rounded-lg p-6 border border-gray-200 text-center">
-                <i class="fa-regular fa-clock text-gray-400 text-2xl mb-3"></i>
-                <p class="text-sm text-gray-600">
-                    A formal citation will be available once the paper is released
-                    (<span class="font-medium text-gray-800">mid-July 2026</span>).
-                </p>
-                <p class="text-xs text-gray-400 mt-2">Please check back after publication.</p>
+            <div class="relative bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <button onclick="navigator.clipboard.writeText(document.getElementById('bibtex').innerText); this.querySelector('span').textContent='Copied'; setTimeout(()=>this.querySelector('span').textContent='Copy',1500);" class="absolute top-3 right-3 inline-flex items-center gap-1.5 px-3 py-1 text-xs text-gray-600 bg-white border border-gray-300 rounded hover:bg-gray-100 transition">
+                    <i class="fa-regular fa-copy"></i><span>Copy</span>
+                </button>
+                <pre id="bibtex" class="text-xs md:text-sm text-gray-700 overflow-x-auto whitespace-pre"><code>@article{panolog2026,
+  title   = {Geometry and Gradient-based Partitioning for Panoramic Outdoor Reconstruction},
+  author  = {Chen, Weijian and Yao, Weibo and Zhang, Yuhang and Tang, Xiaolin and
+             Wang, Guo and Zhang, Weijun and Gao, Xitong and Chen, Yihao and
+             Qin, Hongde and Qi, Lu},
+  journal = {arXiv preprint arXiv:2607.08769},
+  year    = {2026}
+}</code></pre>
             </div>
         </div>
     </section>
